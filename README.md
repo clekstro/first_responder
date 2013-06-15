@@ -1,6 +1,6 @@
 # Sirius
 
-TODO: Write a gem description
+A small library to coerce and validate API responses using PORO's.
 
 ## Installation
 
@@ -18,7 +18,13 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Sirius includes the veritable [virtus](https://github.com/solnic/virtus) and [aequitas](https://github.com/mbj/aequitas)
+libraries within classes to add dynamic attributes and validations to API response objects.
+
+This allows validation of API reponses at a "model" level without requiring Active Record validations/persistence,
+be they responses from real-world production services or Mock API's.
+
+Classes that include Sirius can be instantiated with either XML or JSON and can define the required attributes for that model.
 
 ## Contributing
 
