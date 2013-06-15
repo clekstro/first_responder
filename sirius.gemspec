@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Sirius::VERSION
   spec.authors       = ["Curtis Ekstrom"]
   spec.email         = ["curtis@wellmatchhealth.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
+  spec.description   = %q{A small library to coerce and validate API responses using PORO's.}
+  spec.summary       = %q{Sirius classes wrap API responses and define the attributes required of those responses.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -22,4 +22,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+
 end
