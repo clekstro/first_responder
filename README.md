@@ -21,12 +21,38 @@ Or install it yourself as:
 Sirius includes the veritable [virtus](https://github.com/solnic/virtus) and ActiveModel::Validations
 libraries within classes to add attributes and validations to API response objects.
 
-This allows validation of API reponses at a "model" level,
-be they responses from real-world production services or Mock API's.
+This allows validation of API reponses at a "model" level, be they responses from real-world production services or Mock API's.
 
 Classes that include Sirius can be instantiated with either XML or JSON and can define the required attributes for that model.
 
-Using Virtus, those attributes can be coerced to primitive or custom object types.
+## Examples
+
+To use Sirius, simply include it in your class.  Then specify your required attributes, as in this fictitious example:
+
+```ruby
+class TwitterResponse
+  include Sirius
+  requires :tweet, String
+  requires :date, DateTime
+end
+```
+
+Then instantiate the class:
+
+```ruby
+response = TwitterResponse.new(:json, '{"tweet": "This is a tweet."}')
+
+response.valid?
+=> false
+
+response.date = "June 22nd, 2013"
+response.valid?
+=> true
+
+```
+
+As long as the response contains the required attributes, the instance will be considered valid.
+
 
 ## Contributing
 
