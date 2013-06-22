@@ -53,6 +53,12 @@ response.valid?
 
 As long as the response contains the required attributes, the instance will be considered valid.
 
+## TODO
+
+1. Custom Attributes: have methods defined on the class that do not directly map to their corresponding hash key.
+2. Nested Attributes: have methods defined on the class that map to nested hash keys, exposing them as first class methods.
+3. Raise when attribute not present in data on instantiation.
+
 
 ## Contributing
 
