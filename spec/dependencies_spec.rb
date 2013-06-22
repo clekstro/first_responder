@@ -5,8 +5,8 @@ describe Sirius do
     it 'requires virtus' do
       Virtus.should be
     end
-    it 'requires aequitas' do
-      Aequitas.should be
+    it 'requires active_model' do
+      ActiveModel.should be
     end
   end
 end

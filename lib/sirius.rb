@@ -1,42 +1,56 @@
 require "sirius/version"
 require 'virtus'
-require 'aequitas'
+require 'active_model'
+require 'active_support/core_ext/hash'
+require 'json'
 
 module Sirius
-  FORMATS = [:json, :xml]
+  VALID_FORMATS = [:json, :xml]
 
   module InstanceMethods
-    def initialize(format=:json, serialized)
-      @format = ensure_format(format)
-      @data = deserialize(serialized)
-      # set_attributes_for(@data)
+    def initialize(fmt=:json, data)
+      @format = ensure_format(fmt)
+      @data = deserialize(data, fmt)
+      map_attrs
     end
 
     def ensure_format(fmt)
-      return fmt if FORMATS.include?(fmt)
-      raise UnknownSerializationFormat
+      raise UnknownFormatError unless VALID_FORMATS.include?(fmt)
     end
 
-    def deserialize(serialized)
-      return JSON.parse(serialized) if @format == :json
+    def deserialize(data, format)
+      return JSON.parse(data) if format == :json
+      Hash.from_xml(data) if format == :xml
+    end
+
+    def map_attrs
+      self.class.required_attributes.each do |attr|
+        send("#{attr}=", @data[attr.to_s])
+      end
     end
   end
 
   module ClassMethods
-    include Virtus
-    include Aequitas
-    def requires(attribute, type, opts={})
-      attribute(attribute, type, opts)
+    def required_attributes
+      @@required_attributes ||= []
     end
+
+    def requires(attr, type, opts={})
+      required_attributes << attr
+      validates_presence_of attr
+      attribute attr, type, opts
+    end  
   end
 
   module Exceptions
-    class UnknownSerializationFormat < Exception; end
+    class UnknownFormatError < Exception; end
   end
 
-  def self.included base
-    base.extend Sirius::Exceptions
+  def self.included(base)
+    base.send(:include, Virtus)
+    base.send(:include, ActiveModel::Validations)
     base.send(:include, Sirius::InstanceMethods)
-    base.extend Sirius::ClassMethods
+    base.extend(Sirius::ClassMethods)
+    base.extend(Sirius::Exceptions)
   end
 end
