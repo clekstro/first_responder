@@ -18,13 +18,15 @@ Or install it yourself as:
 
 ## Usage
 
-Sirius includes the veritable [virtus](https://github.com/solnic/virtus) and [aequitas](https://github.com/mbj/aequitas)
-libraries within classes to add dynamic attributes and validations to API response objects.
+Sirius includes the veritable [virtus](https://github.com/solnic/virtus) and ActiveModel::Validations
+libraries within classes to add attributes and validations to API response objects.
 
-This allows validation of API reponses at a "model" level without requiring Active Record validations/persistence,
+This allows validation of API reponses at a "model" level,
 be they responses from real-world production services or Mock API's.
 
 Classes that include Sirius can be instantiated with either XML or JSON and can define the required attributes for that model.
+
+Using Virtus, those attributes can be coerced to primitive or custom object types.
 
 ## Contributing
 
