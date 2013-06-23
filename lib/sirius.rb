@@ -8,6 +8,12 @@ module Sirius
   VALID_FORMATS = [:json, :xml]
 
   module InstanceMethods
+
+    # Every instance must instantiate itself with a format and corresponding
+    # data. Given that information, formats are validated, data is parsed using
+    # that format, after which the attributes defined on the class are set to
+    # the hash value at the defined location.
+
     def initialize(fmt=:json, data)
       @format = ensure_format(fmt)
       @data = deserialize(data, fmt)
@@ -31,6 +37,10 @@ module Sirius
         send("#{attr}=", value)
       end
     end
+
+    # Currently have to use eval to access @data at nested array object
+    # attr_hash[attr] is String at this point:
+    # "['foo']['bar']['baz']"
 
     def extract_attribute_value(attr_hash, attr)
       return eval("@data#{attr_hash[attr]}") if attr_hash[attr]
