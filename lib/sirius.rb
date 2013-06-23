@@ -6,7 +6,6 @@ require 'json'
 
 module Sirius
   VALID_FORMATS = [:json, :xml]
-  OPTIONS = [:at]
 
   module InstanceMethods
     def initialize(fmt=:json, data)
@@ -26,8 +25,18 @@ module Sirius
     end
 
     def map_attrs
-      self.class.required_attributes.each do |attr|
-        send("#{attr}=", @data[attr.to_s])
+      self.class.required_attributes.each do |attr_hash|
+        attr = attr_hash.keys.first
+        value = extract_attribute_value(attr_hash, attr)
+        send("#{attr}=", value)
+      end
+    end
+
+    def extract_attribute_value(attr_hash, attr)
+      if attr_hash[attr]
+        eval "@data#{attr_hash[attr]}"
+      else
+        @data[attr.to_s]
       end
     end
   end
@@ -38,9 +47,8 @@ module Sirius
     end
 
     def requires(attr, type, opts={})
-      supported_opts = opts.slice!(*OPTIONS)
-      # required_attributes << Hash.new(attr, supported_opts)
-      required_attributes << attr
+      sirius_opts = opts.extract!(:at)[:at]
+      required_attributes << Hash[attr, sirius_opts]
       validates_presence_of attr
       attribute attr, type, opts
     end  

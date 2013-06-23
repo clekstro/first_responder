@@ -79,15 +79,18 @@ describe Sirius do
       let(:klass) {
         class Test
           include Sirius
-          requires :foo, String, at: "['bar']['baz']"
-          requires :pooh, Integer, at: "['keychain']"
+          requires :foo, String, at: "['foo']['bar']['baz']"
         end
       }
-      context "with passed options (at)" do
-        let(:valid_json) { '{"foo":{"bar":{"baz": "boo"}, "keychain": "baz"}}' }
+      context "(json)" do
+        let(:valid_json) { '{"foo":{"bar":{"baz": "boo"}}}' }
         subject { klass.new(:json, valid_json) }
         its(:foo) { should == "boo" }
-
+      end
+      context "(xml)" do
+        let(:valid_xml) { '<foo><bar><baz>boo</baz></bar></foo>' }
+        subject { klass.new(:xml, valid_xml) }
+        its(:foo) { should == "boo" }
       end
     end
   end

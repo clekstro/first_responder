@@ -50,13 +50,33 @@ response.valid?
 => true
 
 ```
-
 As long as the response contains the required attributes, the instance will be considered valid.
+
+Sirius assumes that the attribute you're defining is an unnested hash key.  The following example shows how to enable nested hash keys:
+```ruby
+class Magician
+  include Sirius
+  requires :rabbit, String, at: "['black']['hat']"
+end
+```
+Then instantiate with JSON/XML as before:
+```ruby
+trick = '{"black": {"hat": "Surprise!"}}'
+magician = Magician.new(:json, trick)
+```
+And, as one might have seen coming:
+```ruby
+magician.rabbit
+=> "Surprise!"
+```
+Were the black hat empty, the magician would, of course, not be valid ;)
+The previous example also highlights a second hidden feature in the `at` parameter: aliasing.
+If you want to refer to a JSON/XML node by a different name, simply require the attribute as you wish it to be called, pointing to its hash location.
 
 ## TODO
 
-1. Custom Attributes: have methods defined on the class that do not directly map to their corresponding hash key.
-2. Nested Attributes: have methods defined on the class that map to nested hash keys, exposing them as first class methods.
+1. Allow for nested object validation.  As Virtus can coerce to custom objects, require that all nested objects are themselves valid.
+2. Pinpoint errors in JSON/XML in exception (helps to debug API problems)
 3. Raise when attribute not present in data on instantiation.
 
 
