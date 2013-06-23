@@ -33,11 +33,8 @@ module Sirius
     end
 
     def extract_attribute_value(attr_hash, attr)
-      if attr_hash[attr]
-        eval "@data#{attr_hash[attr]}"
-      else
-        @data[attr.to_s]
-      end
+      return eval("@data#{attr_hash[attr]}") if attr_hash[attr]
+      @data[attr.to_s]
     end
   end
 
@@ -47,11 +44,15 @@ module Sirius
     end
 
     def requires(attr, type, opts={})
-      sirius_opts = opts.extract!(:at)[:at]
-      required_attributes << Hash[attr, sirius_opts]
+      add_to_required(attr, opts)
       validates_presence_of attr
       attribute attr, type, opts
     end  
+
+    def add_to_required(attr, opts)
+      sirius_opts = opts.extract!(:at)[:at]
+      required_attributes << Hash[attr, sirius_opts]
+    end
   end
 
   module Exceptions
