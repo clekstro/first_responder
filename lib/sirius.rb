@@ -6,6 +6,7 @@ require 'json'
 
 module Sirius
   VALID_FORMATS = [:json, :xml]
+  OPTIONS = [:at]
 
   module InstanceMethods
     def initialize(fmt=:json, data)
@@ -19,6 +20,7 @@ module Sirius
     end
 
     def deserialize(data, format)
+      raise MissingDataError if data == ''
       return JSON.parse(data) if format == :json
       Hash.from_xml(data) if format == :xml
     end
@@ -36,6 +38,8 @@ module Sirius
     end
 
     def requires(attr, type, opts={})
+      supported_opts = opts.slice!(*OPTIONS)
+      # required_attributes << Hash.new(attr, supported_opts)
       required_attributes << attr
       validates_presence_of attr
       attribute attr, type, opts
@@ -44,6 +48,7 @@ module Sirius
 
   module Exceptions
     class UnknownFormatError < Exception; end
+    class MissingDataError < Exception; end
   end
 
   def self.included(base)

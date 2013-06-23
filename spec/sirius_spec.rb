@@ -2,6 +2,11 @@ require 'sirius'
 require 'json'
 
 describe Sirius do
+  let(:valid_json) { '{"foo":"bar"}' }
+  let(:incomplete_json) { '{"foo": null}' }
+  let(:valid_xml) { "<foo>bar</foo>" }
+  let(:incomplete_xml) { "<foo></foo>" }
+
   describe ".initialize" do
     let(:klass) { class Test; include Sirius; end }
 
@@ -15,16 +20,26 @@ describe Sirius do
       context "json" do
         context "and valid data" do
           it "initializes successfully" do
-            expect{ klass.new(:json, '{"foo":"bar"}') }.not_to raise_error
+            expect{ klass.new(:json, valid_json) }.not_to raise_error
           end
         end
-        context "and invalid data" do
+        context "and blank data" do
           it "blows up" do
             expect{ klass.new(:json, '') }.to raise_error
           end
         end
       end
       context "xml" do
+        context "and valid data" do
+          it "initializes successfully" do
+            expect{ klass.new(:xml, valid_xml) }.not_to raise_error
+          end
+        end
+        context "and blank data" do
+          it "blows up" do
+            expect{ klass.new(:xml, '') }.to raise_error
+          end
+        end
       end
     end
   end
@@ -38,26 +53,41 @@ describe Sirius do
     }
     context "json attribute" do
       context "with data" do
-        subject { klass.new(:json, '{"foo":"bar"}') }
+        subject { klass.new(:json, valid_json) }
         it{ should respond_to(:foo) }
         its(:foo) { should == "bar" }
         it{ should be_valid }
       end
       context "without data" do
-        subject { klass.new(:json, '{"foo": null}') }
+        subject { klass.new(:json, incomplete_json) }
         it{ should_not be_valid }
       end
     end
     context "xml attribute" do
       context "with data" do
-        subject { klass.new(:xml, '<foo>bar</foo>') }
+        subject { klass.new(:xml, valid_xml) }
         it{ should respond_to(:foo) }
         its(:foo) { should == "bar" }
         it{ should be_valid }
       end
       context "without data" do
-        subject { klass.new(:xml, '<foo></foo>') }
+        subject { klass.new(:xml, incomplete_xml) }
         it{ should_not be_valid }
+      end
+    end
+    describe "extracts passed options" do
+      let(:klass) {
+        class Test
+          include Sirius
+          requires :foo, String, at: "['bar']['baz']"
+          requires :pooh, Integer, at: "['keychain']"
+        end
+      }
+      context "with passed options (at)" do
+        let(:valid_json) { '{"foo":{"bar":{"baz": "boo"}, "keychain": "baz"}}' }
+        subject { klass.new(:json, valid_json) }
+        its(:foo) { should == "boo" }
+
       end
     end
   end
