@@ -107,6 +107,11 @@ describe Sirius do
         subject { klass.new(:json, nested_json) }
         its(:foo) { should == 'boo' }
       end
+      context "(xml)" do
+        subject { klass.new(:xml, nested_xml) }
+        its(:foo) { should == 'boo' }
+      end
     end
   end
+
 end
