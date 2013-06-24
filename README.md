@@ -52,6 +52,8 @@ response.valid?
 ```
 As long as the response contains the required attributes, the instance will be considered valid.
 
+### Nested Keys
+
 Sirius assumes that the attribute you're defining is an unnested hash key.  The following example shows how to enable nested hash keys:
 ```ruby
 class Magician
@@ -72,6 +74,35 @@ magician.rabbit
 Were the black hat empty, the magician would, of course, not be valid ;)
 The previous example also highlights a second hidden feature in the `at` parameter: aliasing.
 If you want to refer to a JSON/XML node by a different name, simply require the attribute as you wish it to be called, pointing to its hash location.
+
+### The Root
+
+But what if all of your desired information is nested deeply within XML/JSON, always under the same outer node?
+Because we're all lazy and efficient, Sirius offers the ability to define a root element, which serves as the jumping off point for all other attributes using `at`:
+
+```ruby
+class Treasure
+  include Virtus
+  attribute :type, String
+  attribute :weight, Integer
+  attribute :unit, String
+end
+
+class TreasureHunt
+  include Sirius
+  root "['ocean']['sea_floor']['treasure_chest']['hidden_compartment']"
+  requires :treasure, Treasure
+end
+```
+So when we get back our sunken treasure response, and it contains multiple attributes we don't really care about, the code above allows us to skip straight to the good stuff!
+
+```ruby
+response = '{"ocean": { "sea_floor": {"treasure_chest": {"hidden_compartment": { "treasure": { "type": "Gold", "weight": 1, "unit": "Ton" }}}}}}'
+treasure_hunt = TreasureHunt.new(:json, response)
+treasure_hunt.treasure
+
+```
+
 
 ## TODO
 
