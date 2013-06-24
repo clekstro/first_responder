@@ -43,8 +43,12 @@ module Sirius
     # "['foo']['bar']['baz']"
 
     def extract_attribute_value(attr_hash, attr)
-      return eval("@data#{attr_hash[attr]}") if attr_hash[attr]
-      @data[attr.to_s]
+      if attr_hash[attr]
+        hash_location = self.class.sirius_root + attr_hash[attr]
+        eval("@data#{hash_location}")
+      else
+        @data[attr.to_s]
+      end
     end
   end
 
@@ -53,11 +57,19 @@ module Sirius
       @@required_attributes ||= []
     end
 
+    def sirius_root
+      @@sirius_root ||= ""
+    end
+
+    def root(node)
+      @@sirius_root = node
+    end
+
     def requires(attr, type, opts={})
       add_to_required(attr, opts)
       validates_presence_of attr
       attribute attr, type, opts
-    end  
+    end
 
     def add_to_required(attr, opts)
       sirius_opts = opts.extract!(:at)[:at]

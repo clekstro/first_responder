@@ -6,6 +6,8 @@ describe Sirius do
   let(:incomplete_json) { '{"foo": null}' }
   let(:valid_xml) { "<foo>bar</foo>" }
   let(:incomplete_xml) { "<foo></foo>" }
+  let(:nested_json) { '{"foo":{"bar":{"baz": "boo"}}}' }
+  let(:nested_xml) { '<foo><bar><baz>boo</baz></bar></foo>' }
 
   describe ".initialize" do
     let(:klass) { class Test; include Sirius; end }
@@ -83,14 +85,27 @@ describe Sirius do
         end
       }
       context "(json)" do
-        let(:valid_json) { '{"foo":{"bar":{"baz": "boo"}}}' }
-        subject { klass.new(:json, valid_json) }
+        subject { klass.new(:json, nested_json) }
         its(:foo) { should == "boo" }
       end
       context "(xml)" do
-        let(:valid_xml) { '<foo><bar><baz>boo</baz></bar></foo>' }
-        subject { klass.new(:xml, valid_xml) }
+        subject { klass.new(:xml, nested_xml) }
         its(:foo) { should == "boo" }
+      end
+    end
+  end
+  describe ".root" do
+    let(:klass) {
+      class Test
+        include Sirius
+        root "['foo']['bar']"
+        requires :foo, String, at: "['baz']"
+      end
+    }
+    context "correctly filters beginning at defined root node" do
+      context "(json)" do
+        subject { klass.new(:json, nested_json) }
+        its(:foo) { should == 'boo' }
       end
     end
   end
