@@ -52,7 +52,7 @@ module Sirius
 
   module ClassMethods
     def required_attributes
-      @@required_attributes ||= []
+      @required_attributes ||= []
     end
 
     def reset_required_attributes
@@ -60,11 +60,11 @@ module Sirius
     end
 
     def sirius_root
-      @@sirius_root ||= ""
+      @sirius_root ||= ""
     end
 
     def root(node)
-      @@sirius_root = node
+      @sirius_root = node
     end
 
     def requires(attr, type, opts={})
@@ -87,8 +87,8 @@ module Sirius
   def self.included(base)
     base.send(:include, Virtus)
     base.send(:include, ActiveModel::Validations)
-    base.send(:include, Sirius::InstanceMethods)
-    base.extend(Sirius::ClassMethods)
-    base.extend(Sirius::Exceptions)
+    base.send(:include, InstanceMethods)
+    base.extend(ClassMethods)
+    base.extend(Exceptions)
   end
 end
