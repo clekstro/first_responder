@@ -10,7 +10,7 @@ describe Sirius do
   let(:nested_xml) { '<foo><bar><baz>boo</baz></bar></foo>' }
 
   describe ".initialize" do
-    let(:klass) { class Test; include Sirius; end }
+    let(:klass) { Class.new { include Sirius } }
 
     context "with unknown format" do
       it "raises UnknownSerializationFormat error" do
@@ -48,9 +48,10 @@ describe Sirius do
 
   describe "#requires" do
     let(:klass) {
-      class Test
+      Class.new do
         include Sirius
         requires :foo, String
+        def self.model_name; ActiveModel::Name.new(self, nil, "temp"); end
       end
     }
     context "json attribute" do
@@ -79,7 +80,7 @@ describe Sirius do
     end
     describe "extracts passed options" do
       let(:klass) {
-        class Test
+        Class.new do
           include Sirius
           requires :foo, String, at: "['foo']['bar']['baz']"
         end
@@ -96,7 +97,7 @@ describe Sirius do
   end
   describe ".root" do
     let(:klass) {
-      class Test
+      Class.new do
         include Sirius
         root "['foo']['bar']"
         requires :foo, String, at: "['baz']"
