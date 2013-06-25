@@ -97,7 +97,12 @@ end
 So when we get back our sunken treasure response, and it contains multiple attributes we don't really care about, the code above allows us to skip straight to the good stuff!
 
 ```ruby
-response = '{"ocean": { "sea_floor": {"treasure_chest": {"hidden_compartment": { "treasure": { "type": "Gold", "weight": 1, "unit": "Ton" }}}}}}'
+response = '{"ocean": 
+              { "sea_floor": 
+                {"treasure_chest": 
+                  {"hidden_compartment": 
+                    { "treasure": { "type": "Gold", "weight": 1, "unit": "Ton" }}}}}}'
+
 treasure_hunt = TreasureHunt.new(:json, response)
 treasure_hunt.treasure
 => #<Treasure:0x007fe50c98c990 @type="Gold", @weight=1, @unit="Ton">
