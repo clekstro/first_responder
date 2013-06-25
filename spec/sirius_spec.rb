@@ -114,4 +114,25 @@ describe Sirius do
     end
   end
 
+  describe "maintains Virtus coercion abilities" do
+    before do
+      class Treasure
+        include Virtus
+        attribute :type, String
+        attribute :weight, Integer
+        attribute :unit, String
+      end
+    end
+    let(:klass) {
+      class TreasureHunt
+        include Sirius
+        root "['ocean']['sea_floor']['treasure_chest']['hidden_compartment']"
+        requires :treasure, Treasure
+      end
+    }
+    let(:response) { '{"ocean": { "sea_floor": {"treasure_chest": {"hidden_compartment": { "treasure": { "type": "Gold", "weight": 1, "unit": "Ton" }}}}}}' }
+    subject { klass.new(:json, response).treasure }
+    it{ should be }
+    it{ should be_a(Treasure) }
+  end
 end

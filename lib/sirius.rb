@@ -44,12 +44,9 @@ module Sirius
     # "['foo']['bar']['baz']"
 
     def extract_attribute_value(attr_hash, attr)
-      if attr_hash[attr]
-        hash_location = self.class.sirius_root + attr_hash[attr]
-        eval("@data#{hash_location}")
-      else
-        @data[attr.to_s]
-      end
+      attr_location = (attr_hash[attr] || "['#{attr.to_s}']")
+      hash_location = self.class.sirius_root + attr_location
+      eval("@data#{hash_location}")
     end
   end
 
