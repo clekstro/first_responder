@@ -18,7 +18,6 @@ module Sirius
       @format = ensure_format(fmt)
       @data = deserialize(data, fmt)
       map_attrs
-      self.class.reset_required_attributes
     end
 
     def ensure_format(fmt)
@@ -53,10 +52,6 @@ module Sirius
   module ClassMethods
     def required_attributes
       @required_attributes ||= []
-    end
-
-    def reset_required_attributes
-      @@required_attributes = nil
     end
 
     def sirius_root
