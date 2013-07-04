@@ -115,25 +115,60 @@ describe Sirius do
     end
   end
 
-  describe "maintains Virtus coercion abilities" do
-    before do
-      class Treasure
-        include Virtus
-        attribute :type, String
-        attribute :weight, Integer
-        attribute :unit, String
-      end
-    end
+  describe "nested sirius objects" do
     let(:klass) {
-      class TreasureHunt
+      Class.new do
         include Sirius
         root "['ocean']['sea_floor']['treasure_chest']['hidden_compartment']"
         requires :treasure, Treasure
       end
     }
-    let(:response) { '{"ocean": { "sea_floor": {"treasure_chest": {"hidden_compartment": { "treasure": { "type": "Gold", "weight": 1, "unit": "Ton" }}}}}}' }
-    subject { klass.new(:json, response).treasure }
-    it{ should be }
-    it{ should be_a(Treasure) }
+    let(:with_treasure) { '{"ocean": { "sea_floor": {"treasure_chest": {"hidden_compartment": { "treasure": { "type": "Gold", "weight": 1, "unit": "Ton" }}}}}}' }
+
+    let(:without_treasure) { '{"ocean": { "sea_floor": {"treasure_chest": {"hidden_compartment": { "treasure": { "type": null, "weight": null, "unit": null}}}}}}' }
+
+    describe "maintains Virtus coercion abilities" do
+
+      before do
+        class Treasure
+          include Virtus
+          attribute :type, String
+          attribute :weight, Integer
+          attribute :unit, String
+        end
+      end
+
+      subject { klass.new(:json, with_treasure).treasure }
+      it{ should be_a(Treasure) }
+    end
+
+    describe "validates nested sirius objects" do
+
+      before do
+        class Treasure
+          include Sirius
+          requires :type, String
+          requires :weight, Integer
+          requires :unit, String
+        end
+      end
+
+      describe ".nested_validations" do
+        it "returns required attributes that must themselves be validated" do
+          klass.nested_validations.should == [:treasure]
+        end
+      end
+
+      describe "#valid?" do
+        context "with invalid nested object" do
+          subject { klass.new(:json, without_treasure) }
+          it{ should_not be_valid }
+        end
+        context "with valid nested object" do
+          subject { klass.new(:json, with_treasure) }
+          it{ should be_valid }
+        end
+      end
+    end
   end
 end

@@ -1,8 +1,9 @@
 require "sirius/version"
-require 'virtus'
-require 'active_model'
-require 'active_support/core_ext/hash'
-require 'json'
+require "virtus"
+require "active_model"
+require "active_support/core_ext/hash"
+require "active_support/inflector"
+require "json"
 
 module Sirius
   VALID_FORMATS = [:json, :xml]
@@ -14,14 +15,41 @@ module Sirius
     # that format, after which the attributes defined on the class are set to
     # the hash value at the defined location.
 
-    def initialize(fmt=:json, data)
-      @format = ensure_format(fmt)
-      @data = deserialize(data, fmt)
+    def initialize(fmt=nil, data)
+      @format = ensure_format(fmt) if fmt
+      @data = data.is_a?(Hash) ? data : deserialize(data, fmt)
       map_attrs
+    end
+
+    def valid?
+      return super if nested_validations.empty?
+      true if all_attributes_valid?
+    end
+
+    private
+
+    def map_attrs
+      required_attributes.each do |attr_hash|
+        attr = attr_hash.keys.first
+        value = extract_attribute_value(attr_hash, attr)
+        send("#{attr}=", value)
+      end
     end
 
     def ensure_format(fmt)
       raise UnknownFormatError unless VALID_FORMATS.include?(fmt)
+    end
+
+    def all_attributes_valid?
+      !nested_validations.any? { |attr| !eval("#{attr}.valid?") }
+    end
+
+    def required_attributes
+      self.class.required_attributes
+    end
+
+    def nested_validations
+      self.class.nested_validations
     end
 
     def deserialize(data, format)
@@ -30,13 +58,6 @@ module Sirius
       Hash.from_xml(data) if format == :xml
     end
 
-    def map_attrs
-      self.class.required_attributes.each do |attr_hash|
-        attr = attr_hash.keys.first
-        value = extract_attribute_value(attr_hash, attr)
-        send("#{attr}=", value)
-      end
-    end
 
     # Currently have to use eval to access @data at nested array object
     # attr_hash[attr] is String at this point:
@@ -54,6 +75,10 @@ module Sirius
       @required_attributes ||= []
     end
 
+    def nested_validations
+      @nested_validations ||= []
+    end
+
     def sirius_root
       @sirius_root ||= ""
     end
@@ -64,6 +89,7 @@ module Sirius
 
     def requires(attr, type, opts={})
       add_to_required(attr, opts)
+      add_to_nested(attr, type)
       validates_presence_of attr
       attribute attr, type, opts
     end
@@ -72,6 +98,11 @@ module Sirius
       sirius_opts = opts.extract!(:at)[:at]
       required_attributes << Hash[attr, sirius_opts]
     end
+
+    def add_to_nested(attr, type)
+      nested_validations << attr if type.ancestors.include?(Sirius)
+    end
+
   end
 
   module Exceptions
