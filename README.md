@@ -158,9 +158,8 @@ treasure_hunt.valid?
 
 ## TODO
 
-1. Allow for nested object validation.  As Virtus can coerce to custom objects, require that all nested objects are themselves valid.
-2. Pinpoint errors in JSON/XML in exception (helps to debug API problems)
-3. Raise when attribute not present in data on instantiation.
+1. Pinpoint errors in JSON/XML in exception (helps to debug API problems)
+2. Raise when attribute not present in data on instantiation.
 
 
 ## Contributing
