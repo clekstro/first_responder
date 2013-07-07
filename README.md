@@ -110,6 +110,52 @@ treasure_hunt.treasure
 
 Treasure that.
 
+### Nested Validations
+Sirius will also detect problems lurking beneath the surface by automatically searching for and validating nested attributes.
+Take the previous example of a `TreasureHunt` and `Treasure` classes, this time including Sirius and requiring the presence of certain attributes.
+A `TreasureHunt`, after all, is only valid if the `Treasure` it finds is:
+
+```ruby
+class TreasureHunt
+  include Sirius
+  root "['ocean']['sea_floor']['treasure_chest']['hidden_compartment']"
+  requires :treasure, Treasure
+end
+
+class Treasure
+  include Sirius
+  requires :type, String
+  requires :weight, Integer
+  requires :unit, String
+end
+```
+We instantiate our `TreasureHunt` this time, however, with what appears to be a `Treasure`, but isn't:
+
+```ruby
+response = '{"ocean": 
+              { "sea_floor": 
+                {"treasure_chest": 
+                  {"hidden_compartment": 
+                    { "treasure": { "type": null, "weight": null, "unit": null}}}}}}'
+
+treasure_hunt = TreasureHunt.new(:json, response)
+treasure_hunt.treasure
+```
+Coercion still works, but the `Treasure` object that's been created is devoid of all value.  It is itself, of course, invalid:
+
+```ruby
+treasure_hunt.treasure.valid?
+=> false
+```
+
+But since Sirius knows that our `TreasureHunt` requires a `Treasure`, our `TreasureHunt` is also rendered invalid:
+
+```ruby
+treasure_hunt.valid?
+=> false
+```
+
+
 ## TODO
 
 1. Allow for nested object validation.  As Virtus can coerce to custom objects, require that all nested objects are themselves valid.
