@@ -41,7 +41,7 @@ module Sirius
     end
 
     def all_attributes_valid?
-      !nested_validations.any? { |attr| !eval("#{attr}.valid?") }
+      nested_validations.all? { |attr| eval("#{attr}.valid?") }
     end
 
     def required_attributes
@@ -87,10 +87,14 @@ module Sirius
       @sirius_root = node
     end
 
+    def default_validations
+      { presence: true }
+    end
+
     def requires(attr, type, opts={})
       add_to_required(attr, opts)
       add_to_nested(attr, type)
-      validates_presence_of attr
+      validates attr, default_validations.merge(opts)
       attribute attr, type, opts
     end
 

@@ -54,6 +54,7 @@ describe Sirius do
         def self.model_name; ActiveModel::Name.new(self, nil, "temp"); end
       end
     }
+
     context "json attribute" do
       context "with data" do
         subject { klass.new(:json, valid_json) }
@@ -66,6 +67,7 @@ describe Sirius do
         it{ should_not be_valid }
       end
     end
+
     context "xml attribute" do
       context "with data" do
         subject { klass.new(:xml, valid_xml) }
@@ -78,6 +80,7 @@ describe Sirius do
         it{ should_not be_valid }
       end
     end
+
     describe "extracts passed options" do
       let(:klass) {
         Class.new do
@@ -85,6 +88,7 @@ describe Sirius do
           requires :foo, String, at: "['foo']['bar']['baz']"
         end
       }
+
       context "(json)" do
         subject { klass.new(:json, nested_json) }
         its(:foo) { should == "boo" }
@@ -95,6 +99,7 @@ describe Sirius do
       end
     end
   end
+
   describe ".root" do
     let(:klass) {
       Class.new do
@@ -103,6 +108,7 @@ describe Sirius do
         requires :foo, String, at: "['baz']"
       end
     }
+
     context "correctly filters beginning at defined root node" do
       context "(json)" do
         subject { klass.new(:json, nested_json) }
@@ -167,6 +173,30 @@ describe Sirius do
         context "with valid nested object" do
           subject { klass.new(:json, with_treasure) }
           it{ should be_valid }
+        end
+      end
+    end
+
+    describe "supports ActiveModel::Validation parameters" do
+      context "format" do
+
+        let(:valid) {
+          class Valid
+            include Sirius
+            requires :foo, String, format: { with: /bar/ }
+          end
+        }
+
+        let(:invalid) {
+          class Invalid
+            include Sirius
+            requires :foo, String, format: { with: /baz/ }
+          end
+        }
+
+        it "is invalid with non-matching format" do
+          valid.new(:json, valid_json).should be_valid
+          invalid.new(:json, valid_json).should_not be_valid
         end
       end
     end
