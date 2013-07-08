@@ -175,6 +175,7 @@ For further validation examples, please see the Rails [Guides](http://guides.rub
 
 1. Pinpoint errors in JSON/XML in exception (helps to debug API problems)
 2. Raise when attribute not present in data on instantiation.
+3. Clearly separate ActiveModel::Validation options from those passed to Virtus
 
 
 ## Contributing
