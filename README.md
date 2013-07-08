@@ -155,6 +155,21 @@ treasure_hunt.valid?
 => false
 ```
 
+### ActiveModel::Validations
+Because Sirius uses ActiveModel::Validations under the covers, you can use most of the API you already know to validate individual attributes.
+Of course, this excludes those checks relying on persistence (i.e. uniqueness) or attempts to validate an object using Virtus coercion.
+
+```ruby
+class Baz
+  include Sirius
+  requires :foo, String, format: { with: /bar/ }
+end
+```
+
+This should play nicely with the options one normally passes to Virtus attributes, but be advised that collisions are theoretically possible.
+Should you run into an issue here, please don't hesitate to open up an issue.
+
+For further validation examples, please see the Rails [Guides](http://guides.rubyonrails.org/active_record_validations.html) or ActiveModel::Validations API docs.
 
 ## TODO
 
