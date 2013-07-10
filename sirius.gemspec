@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["curtis@wellmatchhealth.com"]
   spec.description   = %q{A small library to coerce and validate API responses using PORO's.}
   spec.summary       = %q{Sirius classes wrap API responses and define the attributes required of those responses.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/clekstro/sirius"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
