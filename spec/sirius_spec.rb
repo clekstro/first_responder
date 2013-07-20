@@ -82,20 +82,39 @@ describe Sirius do
     end
 
     describe "extracts passed options" do
-      let(:klass) {
-        Class.new do
-          include Sirius
-          requires :foo, String, at: "['foo']['bar']['baz']"
-        end
-      }
+      context "with string attrs" do
+        let(:klass) {
+          Class.new do
+            include Sirius
+            requires :foo, String, at: "['foo']['bar']['baz']"
+          end
+        }
 
-      context "(json)" do
-        subject { klass.new(:json, nested_json) }
-        its(:foo) { should == "boo" }
+        context "(json)" do
+          subject { klass.new(:json, nested_json) }
+          its(:foo) { should == "boo" }
+        end
+        context "(xml)" do
+          subject { klass.new(:xml, nested_xml) }
+          its(:foo) { should == "boo" }
+        end
       end
-      context "(xml)" do
-        subject { klass.new(:xml, nested_xml) }
-        its(:foo) { should == "boo" }
+      context "with symbol attrs" do
+        let(:klass) {
+          Class.new do
+            include Sirius
+            requires :foo, String, at: "[:foo][:bar][:baz]"
+          end
+        }
+
+        context "(json)" do
+          subject { klass.new(:json, nested_json) }
+          its(:foo) { should == "boo" }
+        end
+        context "(xml)" do
+          subject { klass.new(:xml, nested_xml) }
+          its(:foo) { should == "boo" }
+        end
       end
     end
   end

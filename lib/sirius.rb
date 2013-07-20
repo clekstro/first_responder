@@ -2,6 +2,7 @@ require "sirius/version"
 require "virtus"
 require "active_model"
 require "active_support/core_ext/hash"
+require "active_support/core_ext/hash/indifferent_access"
 require "active_support/inflector"
 require "json"
 
@@ -79,7 +80,7 @@ module Sirius
     def extract_attribute_value(attr_hash, attr)
       attr_location = (attr_hash[attr] || "['#{attr.to_s}']")
       hash_location = self.class.sirius_root + attr_location
-      eval("@data#{hash_location}")
+      eval("@data.with_indifferent_access#{hash_location}")
     end
   end
 

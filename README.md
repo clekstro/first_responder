@@ -58,18 +58,19 @@ Sirius assumes that the attribute you're defining is an unnested hash key.  The 
 ```ruby
 class Magician
   include Sirius
-  requires :rabbit, String, at: "['black']['hat']"
+  requires :surprise, String, at: "[:black][:hat]" # or using strings "['black']['hat']" 
 end
 ```
+
 Then instantiate with JSON/XML as before:
 ```ruby
-trick = '{"black": {"hat": "Surprise!"}}'
+trick = '{"black": {"hat": "RABBIT!"}}'
 magician = Magician.new(:json, trick)
 ```
 And, as one might have seen coming:
 ```ruby
-magician.rabbit
-=> "Surprise!"
+magician.surprise
+=> "RABBIT!"
 ```
 Were the black hat empty, the magician would, of course, not be valid ;)
 The previous example also highlights a second hidden feature in the `at` parameter: aliasing.
@@ -90,7 +91,7 @@ end
 
 class TreasureHunt
   include Sirius
-  root "['ocean']['sea_floor']['treasure_chest']['hidden_compartment']"
+  root "[:ocean][:sea_floor][:treasure_chest][:hidden_compartment]"
   requires :treasure, Treasure
 end
 ```
@@ -118,7 +119,7 @@ A `TreasureHunt`, after all, is only valid if the `Treasure` it finds is:
 ```ruby
 class TreasureHunt
   include Sirius
-  root "['ocean']['sea_floor']['treasure_chest']['hidden_compartment']"
+  root "[:ocean][:sea_floor][:treasure_chest][:hidden_compartment]"
   requires :treasure, Treasure
 end
 
@@ -202,9 +203,7 @@ For further validation examples, please see the Rails [Guides](http://guides.rub
 
 1. Pinpoint errors in JSON/XML in exception (helps to debug API problems)
 2. Raise when attribute not present in data on instantiation.
-3. Clearly separate ActiveModel::Validation options from those passed to Virtus
-4. Document HashWithIndifferentAccess behavior
-
+3. Clearly separate ActiveModel::Validation options from those passed to Virtus 
 
 ## Contributing
 
