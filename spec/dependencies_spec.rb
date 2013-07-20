@@ -1,6 +1,6 @@
-require 'sirius'
+require 'first_responder'
 
-describe Sirius do
+describe FirstResponder do
   context "dependencies" do
     it 'requires virtus' do
       Virtus.should be

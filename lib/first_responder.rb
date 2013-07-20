@@ -1,4 +1,4 @@
-require "sirius/version"
+require "first_responder/version"
 require "virtus"
 require "active_model"
 require "active_support/core_ext/hash"
@@ -6,7 +6,7 @@ require "active_support/core_ext/hash/indifferent_access"
 require "active_support/inflector"
 require "json"
 
-module Sirius
+module FirstResponder
   VALID_FORMATS = [:json, :xml]
 
   module InstanceMethods
@@ -80,7 +80,7 @@ module Sirius
     def extract_attribute_value(attr_hash, attr)
       return @data if @data.is_a?(Array)
       attr_location = (attr_hash[attr] || "['#{attr.to_s}']")
-      hash_location = self.class.sirius_root + attr_location
+      hash_location = self.class.first_responder_root + attr_location
       eval("@data.with_indifferent_access#{hash_location}")
     end
   end
@@ -94,12 +94,12 @@ module Sirius
       @nested_validations ||= []
     end
 
-    def sirius_root
-      @sirius_root ||= ""
+    def first_responder_root
+      @first_responder_root ||= ""
     end
 
     def root(node)
-      @sirius_root = node
+      @first_responder_root = node
     end
 
     def proc_on_invalid
@@ -122,13 +122,13 @@ module Sirius
     end
 
     def add_to_required(attr, opts)
-      sirius_opts = opts.extract!(:at)[:at]
-      required_attributes << Hash[attr, sirius_opts]
+      first_responder_opts = opts.extract!(:at)[:at]
+      required_attributes << Hash[attr, first_responder_opts]
     end
 
     def add_to_nested(attr, type)
       return if type.is_a? Array
-      nested_validations << attr if type.ancestors.include?(Sirius)
+      nested_validations << attr if type.ancestors.include?(FirstResponder)
     end
 
   end

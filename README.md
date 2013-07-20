@@ -1,4 +1,4 @@
-# Sirius
+# FirstResponder
 
 A small library to coerce and validate API responses using PORO's.
 
@@ -18,20 +18,20 @@ Or install it yourself as:
 
 ## Usage
 
-Sirius includes the veritable [virtus](https://github.com/solnic/virtus) and ActiveModel::Validations
+FirstResponder includes the veritable [virtus](https://github.com/solnic/virtus) and ActiveModel::Validations
 libraries within classes to add attributes and validations to API response objects.
 
 This allows validation of API reponses at a "model" level, be they responses from real-world production services or Mock API's.
 
-Classes that include Sirius can be instantiated with either XML or JSON and can define the required attributes for that model.
+Classes that include FirstResponder can be instantiated with either XML or JSON and can define the required attributes for that model.
 
 ## Examples
 
-To use Sirius, simply include it in your class.  Then specify your required attributes, as in this fictitious example:
+To use FirstResponder, simply include it in your class.  Then specify your required attributes, as in this fictitious example:
 
 ```ruby
 class TwitterResponse
-  include Sirius
+  include FirstResponder
   requires :tweet, String
   requires :date, DateTime
 end
@@ -52,7 +52,7 @@ response.valid?
 ```
 As long as the response contains the required attributes, the instance will be considered valid.
 
-Sirius also supports attributes referencing an Array of objects, allowing Virtus to coerce those objects:
+FirstResponder also supports attributes referencing an Array of objects, allowing Virtus to coerce those objects:
 
 ```ruby
 class Foo
@@ -61,7 +61,7 @@ class Foo
 end
 
 class Biz
-  include Sirius
+  include FirstResponder
   requires :foos, Array[Foo], at: ""
 end
 ```
@@ -78,10 +78,10 @@ biz.foos
 
 ### Nested Keys
 
-Sirius assumes that the attribute you're defining is an unnested hash key.  The following example shows how to enable nested hash keys:
+FirstResponder assumes that the attribute you're defining is an unnested hash key.  The following example shows how to enable nested hash keys:
 ```ruby
 class Magician
-  include Sirius
+  include FirstResponder
   requires :surprise, String, at: "[:black][:hat]" # or using strings "['black']['hat']" 
 end
 ```
@@ -103,7 +103,7 @@ If you want to refer to a JSON/XML node by a different name, simply require the 
 ### The Root
 
 But what if all of your desired information is nested deeply within XML/JSON, always under the same outer node?
-Because we're all lazy and efficient, Sirius offers the ability to define a root element, which serves as the jumping off point for all other attributes using `at`:
+Because we're all lazy and efficient, FirstResponder offers the ability to define a root element, which serves as the jumping off point for all other attributes using `at`:
 
 ```ruby
 class Treasure
@@ -114,7 +114,7 @@ class Treasure
 end
 
 class TreasureHunt
-  include Sirius
+  include FirstResponder
   root "[:ocean][:sea_floor][:treasure_chest][:hidden_compartment]"
   requires :treasure, Treasure
 end
@@ -136,19 +136,19 @@ treasure_hunt.treasure
 Treasure that.
 
 ### Nested Validations
-Sirius will also detect problems lurking beneath the surface by automatically searching for and validating nested attributes.
-Take the previous example of a `TreasureHunt` and `Treasure` classes, this time including Sirius and requiring the presence of certain attributes.
+FirstResponder will also detect problems lurking beneath the surface by automatically searching for and validating nested attributes.
+Take the previous example of a `TreasureHunt` and `Treasure` classes, this time including FirstResponder and requiring the presence of certain attributes.
 A `TreasureHunt`, after all, is only valid if the `Treasure` it finds is:
 
 ```ruby
 class TreasureHunt
-  include Sirius
+  include FirstResponder
   root "[:ocean][:sea_floor][:treasure_chest][:hidden_compartment]"
   requires :treasure, Treasure
 end
 
 class Treasure
-  include Sirius
+  include FirstResponder
   requires :type, String
   requires :weight, Integer
   requires :unit, String
@@ -173,7 +173,7 @@ treasure_hunt.treasure.valid?
 => false
 ```
 
-But since Sirius knows that our `TreasureHunt` requires a `Treasure`, our `TreasureHunt` is also rendered invalid:
+But since FirstResponder knows that our `TreasureHunt` requires a `Treasure`, our `TreasureHunt` is also rendered invalid:
 
 ```ruby
 treasure_hunt.valid?
@@ -181,11 +181,11 @@ treasure_hunt.valid?
 ```
 
 ### The Invalid Callback
-Sirius also allows an object to execute arbitrary code when the object isn't valid.  It is defined on the class and triggered when `#invalid?` is true or `#valid?` is false:
+FirstResponder also allows an object to execute arbitrary code when the object isn't valid.  It is defined on the class and triggered when `#invalid?` is true or `#valid?` is false:
 
 ```ruby
 class InvalidWithCallback
-  include Sirius
+  include FirstResponder
   requires :important_attr, String
   requires :another, String
   when_invalid { |data, errors| puts data }
@@ -208,12 +208,12 @@ with_callback.invalid?(false)
 ```
 
 ### ActiveModel::Validations
-Because Sirius uses ActiveModel::Validations under the covers, you can use most of the API you already know to validate individual attributes.
+Because FirstResponder uses ActiveModel::Validations under the covers, you can use most of the API you already know to validate individual attributes.
 Of course, this excludes those checks relying on persistence (i.e. uniqueness) or attempts to validate an object using Virtus coercion.
 
 ```ruby
 class Baz
-  include Sirius
+  include FirstResponder
   requires :foo, String, format: { with: /bar/ }
 end
 ```

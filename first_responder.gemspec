@@ -5,11 +5,11 @@ require 'sirius/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "sirius"
-  spec.version       = Sirius::VERSION
+  spec.version       = FirstResponder::VERSION
   spec.authors       = ["Curtis Ekstrom"]
   spec.email         = ["curtis@wellmatchhealth.com"]
   spec.description   = %q{A small library to coerce and validate API responses using PORO's.}
-  spec.summary       = %q{Sirius classes wrap API responses and define the attributes required of those responses.}
+  spec.summary       = %q{FirstResponder classes wrap API responses and define the attributes required of those responses.}
   spec.homepage      = "https://github.com/clekstro/sirius"
   spec.license       = "MIT"
 

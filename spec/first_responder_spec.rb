@@ -1,7 +1,7 @@
-require 'sirius'
+require 'first_responder'
 require 'json'
 
-describe Sirius do
+describe FirstResponder do
   let(:valid_json) { '{"foo":"bar"}' }
   let(:incomplete_json) { '{"foo": null}' }
   let(:valid_xml) { "<foo>bar</foo>" }
@@ -10,7 +10,7 @@ describe Sirius do
   let(:nested_xml) { '<foo><bar><baz>boo</baz></bar></foo>' }
 
   describe ".initialize" do
-    let(:klass) { Class.new { include Sirius } }
+    let(:klass) { Class.new { include FirstResponder } }
 
     context "with unknown format" do
       it "raises UnknownSerializationFormat error" do
@@ -49,7 +49,7 @@ describe Sirius do
   describe "#requires" do
     let(:klass) {
       Class.new do
-        include Sirius
+        include FirstResponder
         requires :foo, String
         def self.model_name; ActiveModel::Name.new(self, nil, "temp"); end
       end
@@ -85,7 +85,7 @@ describe Sirius do
       context "with string attrs" do
         let(:klass) {
           Class.new do
-            include Sirius
+            include FirstResponder
             requires :foo, String, at: "['foo']['bar']['baz']"
           end
         }
@@ -102,7 +102,7 @@ describe Sirius do
       context "with symbol attrs" do
         let(:klass) {
           Class.new do
-            include Sirius
+            include FirstResponder
             requires :foo, String, at: "[:foo][:bar][:baz]"
           end
         }
@@ -122,7 +122,7 @@ describe Sirius do
   describe ".root" do
     let(:klass) {
       Class.new do
-        include Sirius
+        include FirstResponder
         root "['foo']['bar']"
         requires :foo, String, at: "['baz']"
       end
@@ -140,10 +140,10 @@ describe Sirius do
     end
   end
 
-  describe "nested sirius objects" do
+  describe "nested first_responder objects" do
     let(:klass) {
       Class.new do
-        include Sirius
+        include FirstResponder
         root "['ocean']['sea_floor']['treasure_chest']['hidden_compartment']"
         requires :treasure, Treasure
       end
@@ -167,10 +167,10 @@ describe Sirius do
       it{ should be_a(Treasure) }
     end
 
-    describe "validates nested sirius objects" do
+    describe "validates nested first_responder objects" do
       before do
         class Treasure
-          include Sirius
+          include FirstResponder
           requires :type, String
           requires :weight, Integer
           requires :unit, String
@@ -214,7 +214,7 @@ describe Sirius do
           context "with proc_on_invalid absent" do
             before do
               class Treasure
-                include Sirius
+                include FirstResponder
                 requires :type, String
                 requires :weight, String
                 requires :unit, String
@@ -248,14 +248,14 @@ describe Sirius do
 
         let(:valid) {
           class Valid
-            include Sirius
+            include FirstResponder
             requires :foo, String, format: { with: /bar/ }
           end
         }
 
         let(:invalid) {
           class Invalid
-            include Sirius
+            include FirstResponder
             requires :foo, String, format: { with: /baz/ }
           end
         }
@@ -277,7 +277,7 @@ describe Sirius do
       end
 
       class JsonArrayTest
-        include Sirius
+        include FirstResponder
         requires :foos, Array[Foo], at: ""
       end
     end

@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'bundler/setup'
 
-require 'sirius'
+require 'first_responder'
 
 RSpec.configure do |config|
   config.fail_fast = true 
