@@ -21,12 +21,21 @@ module Sirius
       map_attrs
     end
 
-    def valid?
-      return super if nested_validations.empty?
-      true if all_attributes_valid?
+    def valid?(execute=true)
+      return true if all_attributes_valid?
+      proc_on_invalid.call(@data, errors) if execute
+      return no_nesting? ? super : false
+    end
+
+    def invalid?(execute=true)
+      !valid?(execute)
     end
 
     private
+
+    def no_nesting?
+      nested_validations.empty?
+    end
 
     def map_attrs
       required_attributes.each do |attr_hash|
@@ -41,7 +50,8 @@ module Sirius
     end
 
     def all_attributes_valid?
-      nested_validations.all? { |attr| eval("#{attr}.valid?") }
+      nested_validations.any? &&
+        nested_validations.all? { |attr| eval("#{attr}.valid?") }
     end
 
     def required_attributes
@@ -52,12 +62,15 @@ module Sirius
       self.class.nested_validations
     end
 
+    def proc_on_invalid
+      self.class.proc_on_invalid || Proc.new {}
+    end
+
     def deserialize(data, format)
       raise MissingDataError if data == ''
       return JSON.parse(data) if format == :json
       Hash.from_xml(data) if format == :xml
     end
-
 
     # Currently have to use eval to access @data at nested array object
     # attr_hash[attr] is String at this point:
@@ -85,6 +98,14 @@ module Sirius
 
     def root(node)
       @sirius_root = node
+    end
+
+    def proc_on_invalid
+      @proc_on_invalid
+    end
+
+    def when_invalid(&blk)
+      @proc_on_invalid = blk
     end
 
     def default_validations

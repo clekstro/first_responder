@@ -149,13 +149,14 @@ describe Sirius do
     end
 
     describe "validates nested sirius objects" do
-
       before do
         class Treasure
           include Sirius
           requires :type, String
           requires :weight, Integer
           requires :unit, String
+
+          when_invalid {}
         end
       end
 
@@ -167,13 +168,59 @@ describe Sirius do
 
       describe "#valid?" do
         context "with invalid nested object" do
-          subject { klass.new(:json, without_treasure) }
-          it{ should_not be_valid }
+          subject { klass.new(:json, without_treasure).valid? }
+          it{ should be_false }
+
+          context "with proc_on_invalid defined" do
+            subject { klass.new(:json, without_treasure) }
+
+            context "by default" do
+              it "calls the proc" do
+                new_proc = stub(:proc)
+                subject.stub(:proc_on_invalid).and_return(new_proc)
+                new_proc.should_receive(:call)
+                subject.valid?
+              end
+            end
+            context "with false passed" do
+              it "does not call the proc" do
+                new_proc = stub(:proc)
+                subject.stub(:proc_on_invalid).and_return(new_proc)
+                new_proc.should_not_receive(:call)
+                subject.valid?(false)
+              end
+            end
+          end
+
+          context "with proc_on_invalid absent" do
+            before do
+              class Treasure
+                include Sirius
+                requires :type, String
+                requires :weight, String
+                requires :unit, String
+              end
+            end
+
+            subject { klass.new(:json, with_treasure) }
+            it "does nothing" do
+              new_proc = stub(:proc)
+              subject.stub(:proc_on_invalid).and_return(new_proc)
+              new_proc.should_not_receive(:call)
+              subject.invalid?
+            end
+          end
         end
+
         context "with valid nested object" do
-          subject { klass.new(:json, with_treasure) }
-          it{ should be_valid }
+          subject { klass.new(:json, with_treasure).valid? }
+          it{ should be_true }
         end
+      end
+
+      describe "#invalid?" do
+        subject { klass.new(:json, with_treasure) }
+        its(:invalid?) { should be_false }
       end
     end
 

@@ -155,6 +155,33 @@ treasure_hunt.valid?
 => false
 ```
 
+### The Invalid Callback
+Sirius also allows an object to execute arbitrary code when the object isn't valid.  It is defined on the class and triggered when `#invalid?` is true or `#valid?` is false:
+
+```ruby
+class InvalidWithCallback
+  include Sirius
+  requires :important_attr, String
+  requires :another, String
+  when_invalid { |data, errors| puts data }
+end
+
+with_callback = InvalidWithCallback.new(:json, '{"foo":"bar"}')
+with_callback.valid?
+{"foo"=>"bar"}
+=> false
+```
+
+As you can tell from the example above, the code will be executed by default whenever `valid?` is called before the boolean value is returned.  Should you desire a return value without executing the callback in a specific intsance, you can supply `false` to the `valid?` and `invalid?` methods:
+
+```ruby
+with_callback.valid?(false)
+=> false
+
+with_callback.invalid?(false)
+=> true
+```
+
 ### ActiveModel::Validations
 Because Sirius uses ActiveModel::Validations under the covers, you can use most of the API you already know to validate individual attributes.
 Of course, this excludes those checks relying on persistence (i.e. uniqueness) or attempts to validate an object using Virtus coercion.
@@ -176,6 +203,7 @@ For further validation examples, please see the Rails [Guides](http://guides.rub
 1. Pinpoint errors in JSON/XML in exception (helps to debug API problems)
 2. Raise when attribute not present in data on instantiation.
 3. Clearly separate ActiveModel::Validation options from those passed to Virtus
+4. Document HashWithIndifferentAccess behavior
 
 
 ## Contributing
