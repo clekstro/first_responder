@@ -52,6 +52,30 @@ response.valid?
 ```
 As long as the response contains the required attributes, the instance will be considered valid.
 
+Sirius also supports attributes referencing an Array of objects, allowing Virtus to coerce those objects:
+
+```ruby
+class Foo
+  include Virtus
+  attribute :foo, String
+end
+
+class Biz
+  include Sirius
+  requires :foos, Array[Foo], at: ""
+end
+```
+
+We can pass an array of objects -- even at the root level in the case of JSON -- and our `Biz` class will have its collection of `Foos`:
+
+```ruby
+json_array = '[ {"foo": "bar" }, { "foo": "bar"} ]'
+biz = Biz.new(:json, json_array)
+
+biz.foos
+=> [#<Foo:0x007f876ac14be0 @foo="bar">, #<Foo:0x007f876ac1e938 @foo="bar">]
+```
+
 ### Nested Keys
 
 Sirius assumes that the attribute you're defining is an unnested hash key.  The following example shows how to enable nested hash keys:
