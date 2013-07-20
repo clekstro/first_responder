@@ -78,6 +78,7 @@ module Sirius
     # "['foo']['bar']['baz']"
 
     def extract_attribute_value(attr_hash, attr)
+      return @data if @data.is_a?(Array)
       attr_location = (attr_hash[attr] || "['#{attr.to_s}']")
       hash_location = self.class.sirius_root + attr_location
       eval("@data.with_indifferent_access#{hash_location}")
@@ -126,6 +127,7 @@ module Sirius
     end
 
     def add_to_nested(attr, type)
+      return if type.is_a? Array
       nested_validations << attr if type.ancestors.include?(Sirius)
     end
 

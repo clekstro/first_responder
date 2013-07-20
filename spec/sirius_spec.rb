@@ -267,4 +267,24 @@ describe Sirius do
       end
     end
   end
+
+  describe "edge cases" do
+    let(:json_array) { '[ { "foo": "bar" }, { "foo": "baz"} ]' }
+    before do
+      class Foo
+        include Virtus
+        attribute :foo, String
+      end
+
+      class JsonArrayTest
+        include Sirius
+        requires :foos, Array[Foo], at: ""
+      end
+    end
+    subject { JsonArrayTest.new(:json, json_array).foos }
+    it { should be_a_kind_of Array }
+    it "coerces to Foo" do
+      subject.first.should be_a Foo
+    end
+  end
 end
