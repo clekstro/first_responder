@@ -6,7 +6,7 @@ A small library to coerce and validate API responses using PORO's.
 
 Add this line to your application's Gemfile:
 
-    gem 'sirius'
+    gem 'first_responder'
 
 And then execute:
 
@@ -14,7 +14,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install sirius
+    $ gem install first_responder
 
 ## Usage
 
