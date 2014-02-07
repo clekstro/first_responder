@@ -156,7 +156,7 @@ describe FirstResponder do
 
       before do
         class Treasure
-          include Virtus
+          include Virtus.model
           attribute :type, String
           attribute :weight, Integer
           attribute :unit, String
@@ -195,7 +195,7 @@ describe FirstResponder do
 
             context "by default" do
               it "calls the proc" do
-                new_proc = stub(:proc)
+                new_proc = double(:proc)
                 subject.stub(:proc_on_invalid).and_return(new_proc)
                 new_proc.should_receive(:call)
                 subject.valid?
@@ -203,7 +203,7 @@ describe FirstResponder do
             end
             context "with false passed" do
               it "does not call the proc" do
-                new_proc = stub(:proc)
+                new_proc = double(:proc)
                 subject.stub(:proc_on_invalid).and_return(new_proc)
                 new_proc.should_not_receive(:call)
                 subject.valid?(false)
@@ -223,7 +223,7 @@ describe FirstResponder do
 
             subject { klass.new(:json, with_treasure) }
             it "does nothing" do
-              new_proc = stub(:proc)
+              new_proc = double(:proc)
               subject.stub(:proc_on_invalid).and_return(new_proc)
               new_proc.should_not_receive(:call)
               subject.invalid?
@@ -272,7 +272,7 @@ describe FirstResponder do
     let(:json_array) { '[ { "foo": "bar" }, { "foo": "baz"} ]' }
     before do
       class Foo
-        include Virtus
+        include Virtus.model
         attribute :foo, String
       end
 
