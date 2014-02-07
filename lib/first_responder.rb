@@ -139,7 +139,7 @@ module FirstResponder
   end
 
   def self.included(base)
-    base.send(:include, Virtus)
+    base.send(:include, Virtus.model)
     base.send(:include, ActiveModel::Validations)
     base.send(:include, InstanceMethods)
     base.extend(ClassMethods)
