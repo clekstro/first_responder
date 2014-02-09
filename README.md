@@ -56,7 +56,7 @@ FirstResponder also supports attributes referencing an Array of objects, allowin
 
 ```ruby
 class Foo
-  include Virtus
+  include Virtus.model
   attribute :foo, String
 end
 
@@ -107,7 +107,7 @@ Because we're all lazy and efficient, FirstResponder offers the ability to defin
 
 ```ruby
 class Treasure
-  include Virtus
+  include Virtus.model
   attribute :type, String
   attribute :weight, Integer
   attribute :unit, String
@@ -134,6 +134,34 @@ treasure_hunt.treasure
 ``` 
 
 Treasure that.
+
+You can also use xpath selectors instead of the usual hash syntax:
+
+Re-using the `Treasure` class from above, and given the following XML:
+
+```xml
+<ocean>
+  <sea_floor>
+    <treasure_chest>
+      <hidden_compartment>
+        <treasure>
+          <type>Gold</type>
+          <weight>1</weight>
+          <unit>Ton</unit>
+        </treasure>
+      </hidden_compartment>
+    </treasure_chest>
+  </sea_floor>
+</ocean>
+```
+
+```ruby
+class Treasure
+  include Virtus.model
+  root "/ocean/sea_floor/hidden_compartment/"
+  requires :treasure, Treasure
+end
+```
 
 ### Nested Validations
 FirstResponder will also detect problems lurking beneath the surface by automatically searching for and validating nested attributes.
